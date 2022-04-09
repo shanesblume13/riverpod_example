@@ -13,11 +13,14 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+// Subclassing a ConsumerWidget to access provider states without a StatefulWidget.
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final helloWorld = ref.watch(helloWorldProvider);
+
     return MaterialApp(
       title: 'Riverpod Example',
       theme: ThemeData(
@@ -25,15 +28,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         body: Center(
-          // The Consumer widget is used to access the global provider state.
-          // WidgetRef allows us to rad, watch, and listen to a provider.
-          // This Consumer will be replaced by a ConsumerWidget.
-          child: Consumer(
-            builder: (BuildContext context, WidgetRef ref, _) {
-              final helloWorld = ref.watch(helloWorldProvider);
-              return Text(helloWorld);
-            },
-          ),
+          child: Text(helloWorld),
         ),
       ),
     );
