@@ -13,13 +13,31 @@ void main() {
   );
 }
 
-// Subclassing a ConsumerWidget to access provider states without a StatefulWidget.
-class MyApp extends ConsumerWidget {
+// Subclassing a ConsumerStatefulWidget gives us access to both the Provider
+// and a local state.
+
+// Extend ConsumerStatefulWidget
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final helloWorld = ref.watch(helloWorldProvider);
+  _MyAppState createState() => _MyAppState();
+}
+
+// Extend ConsumerState
+// Here we can read the provider in the initState, and also
+// watch the provider state in the build method.
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    final value = ref.read(helloWorldProvider);
+    print(value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final value = ref.watch(helloWorldProvider);
 
     return MaterialApp(
       title: 'Riverpod Example',
@@ -28,7 +46,10 @@ class MyApp extends ConsumerWidget {
       ),
       home: Scaffold(
         body: Center(
-          child: Text(helloWorld),
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.headline4,
+          ),
         ),
       ),
     );
