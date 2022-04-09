@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Glocal State Provider
-final helloWorldProvider = Provider<String>((ref) => 'Hello World');
+// Globally provided and managed state w/ initial value
+final counterStateProvider = StateProvider<int>((ref) => 0);
 
 void main() {
   runApp(
@@ -13,31 +13,13 @@ void main() {
   );
 }
 
-// Subclassing a ConsumerStatefulWidget gives us access to both the Provider
-// and a local state.
-
-// Extend ConsumerStatefulWidget
-class MyApp extends ConsumerStatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  _MyAppState createState() => _MyAppState();
-}
-
-// Extend ConsumerState
-// Here we can read the provider in the initState, and also
-// watch the provider state in the build method.
-class _MyAppState extends ConsumerState<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    final value = ref.read(helloWorldProvider);
-    print(value);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final value = ref.watch(helloWorldProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watching th StateProvider for changes and initial value
+    final counter = ref.watch(counterStateProvider);
 
     return MaterialApp(
       title: 'Riverpod Example',
@@ -46,9 +28,27 @@ class _MyAppState extends ConsumerState<MyApp> {
       ),
       home: Scaffold(
         body: Center(
-          child: Text(
-            value,
-            style: Theme.of(context).textTheme.headline4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                // This value will update as the provider state changes.
+                '$counter',
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              MaterialButton(
+                // counterStateProvider is a State Provider, so we can read and modify it
+                // to make global state changes.
+                onPressed: () => ref.read(counterStateProvider.state).state++,
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
         ),
       ),
